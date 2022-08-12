@@ -1,0 +1,33 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'jacoco'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "net.devh:grpc-server-spring-boot-starter:${springBootGrpcVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation project(':user-grpc-lib')
+
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    implementation "javax.validation:validation-api:${javaxValidationVersion}"
+
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}", 'org.projectlombok:lombok', "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'io.grpc:grpc-testing'
+    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+bootRun {
+    args = ["--spring.profiles.active=" + springActiveProfile]
+}

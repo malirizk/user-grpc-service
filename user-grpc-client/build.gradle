@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    javaxValidationVersion = '2.0.1.Final'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    //implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "net.devh:grpc-client-spring-boot-starter:${springBootGrpcVersion}"
+    implementation "javax.validation:validation-api:${javaxValidationVersion}"
+
+    implementation project(':user-grpc-lib')
+
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}", 'org.projectlombok:lombok', "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'io.grpc:grpc-testing'
+    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation "net.devh:grpc-server-spring-boot-autoconfigure:${springBootGrpcVersion}"
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+}
+
+jar.archiveName('user-grpc-client')
+
+bootRun {
+    args = ["--spring.profiles.active=" + springActiveProfile]
+}
