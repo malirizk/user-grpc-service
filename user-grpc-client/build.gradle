@@ -34,8 +34,6 @@ dependencies {
     testImplementation "net.devh:grpc-server-spring-boot-autoconfigure:${springBootGrpcVersion}"
 }
 
-jar.archiveName('user-grpc-client')
-
 bootRun {
     args = ["--spring.profiles.active=" + springActiveProfile]
 }

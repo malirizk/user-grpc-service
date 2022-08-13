@@ -8,9 +8,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.usergrpcservice.grpc.AddUserRequest;
-import com.usergrpcservice.grpc.UserResponse;
-import com.usergrpcservice.grpc.UserServiceGrpc;
+import com.google.protobuf.Empty;
+import com.usergrpcservice.grpc.*;
 import com.usergrpcservice.grpc.client.dto.UserResponseDto;
 import com.usergrpcservice.grpc.client.mapper.UserClientMapper;
 
@@ -40,6 +39,26 @@ public class UserGrpcServerForUserGrpcClientServiceIT extends UserServiceGrpc.Us
 			throw new RuntimeException(e);
 		}
 		responseObserver.onNext(userResponse);
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void updateUser(UpdateUserRequest request, StreamObserver<UserResponse> responseObserver) {
+		UserResponseDto userResponseDto = null;
+		try {
+			userResponseDto = objectMapper.readValue(addUserResponse.getURI().toURL(), UserResponseDto.class);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		userClientMapper.updateUserResponseDtoFromUpdateUserRequest(request, userResponseDto);
+
+		responseObserver.onNext(userClientMapper.toUserResponse(userResponseDto));
+		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void deleteUser(DeleteRequest request, StreamObserver<Empty> responseObserver) {
+		responseObserver.onNext(Empty.getDefaultInstance());
 		responseObserver.onCompleted();
 	}
 }

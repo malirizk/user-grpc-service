@@ -104,8 +104,34 @@ public class UserGrpcClientControllerIT {
 		mockMvc.perform(post(V1_API_USERS).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
 				.content(StreamUtils.copyToString(addUserRequest.getURI().toURL().openStream(),
 						Charset.defaultCharset())))
-				.andDo(print()).andExpect(content().json(StreamUtils
-						.copyToString(addUserResponse.getURI().toURL().openStream(), Charset.defaultCharset())))
-				.andExpect(status().isCreated());
+				.andDo(print()).andExpect(status().isCreated()).andExpect(content().json(StreamUtils
+						.copyToString(addUserResponse.getURI().toURL().openStream(), Charset.defaultCharset())));
+	}
+
+	@Test
+	void Should_Success_When_Update_User() throws Exception {
+		UserResponseDto userResponseDto = objectMapper.readValue(addUserResponse.getURI().toURL(),
+				UserResponseDto.class);
+		assertNotNull(userResponseDto);
+		String newFirstName = "Charlie";
+		String newCountry = "PL";
+		String updateUserRequestJson = "{ \"first_name\" : \"" + newFirstName + "\", \"country\" : \"" + newCountry
+				+ "\" }";
+		userResponseDto.setFirstName(newFirstName);
+		userResponseDto.setCountry(newCountry);
+
+		mockMvc.perform(put(V1_API_USERS + userResponseDto.getId()).contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON).content(updateUserRequestJson)).andDo(print())
+				.andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(userResponseDto)));
+	}
+
+	@Test
+	void Should_Success_When_Delete_User() throws Exception {
+		UserResponseDto userResponseDto = objectMapper.readValue(addUserResponse.getURI().toURL(),
+				UserResponseDto.class);
+		assertNotNull(userResponseDto);
+
+		mockMvc.perform(delete(V1_API_USERS + userResponseDto.getId()).contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
 	}
 }

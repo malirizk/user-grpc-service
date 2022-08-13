@@ -26,8 +26,7 @@ public class UserGrpcClientService {
 	}
 
 	public UserResponseDto updateUser(String id, UserRequestDto userRequestDto) {
-		UpdateUserRequest updateUserRequest = userClientMapper.toUpdateUserRequest(userRequestDto);
-		updateUserRequest.newBuilderForType().setId(id).build();
+		UpdateUserRequest updateUserRequest = userClientMapper.toUpdateUserRequest(id, userRequestDto);
 		return userClientMapper.toUserResponseDto(userServiceStub.updateUser(updateUserRequest));
 	}
 

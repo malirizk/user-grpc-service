@@ -1,7 +1,6 @@
 package com.usergrpcservice.grpc.client.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 import com.usergrpcservice.grpc.AddUserRequest;
 import com.usergrpcservice.grpc.SearchResponse;
@@ -18,9 +17,14 @@ public interface UserClientMapper {
 
 	UserResponseDto toUserResponseDto(UserResponse userResponse);
 
-	UpdateUserRequest toUpdateUserRequest(UserRequestDto userRequestDto);
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	UpdateUserRequest toUpdateUserRequest(String id, UserRequestDto userRequestDto);
 
 	UserSearchResponseDto toUserSearchResponseDto(SearchResponse searchResponse);
 
 	UserResponse toUserResponse(UserResponseDto userResponseDto);
+
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	void updateUserResponseDtoFromUpdateUserRequest(UpdateUserRequest updateUserRequest,
+											   @MappingTarget UserResponseDto userResponseDto);
 }
