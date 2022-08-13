@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.ConstraintViolationException;
 
-import com.usergrpcservice.grpc.server.GrpcServerApplication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.usergrpcservice.grpc.AddUserRequest;
 import com.usergrpcservice.grpc.DeleteRequest;
 import com.usergrpcservice.grpc.UpdateUserRequest;
 import com.usergrpcservice.grpc.UserResponse;
+import com.usergrpcservice.grpc.server.GrpcServerApplication;
 import com.usergrpcservice.grpc.server.exception.BusinessException;
 import com.usergrpcservice.grpc.server.exception.ExceptionMap;
 import com.usergrpcservice.grpc.server.mapper.UserMapper;
@@ -43,19 +42,18 @@ import io.grpc.internal.testing.StreamRecorder;
 @SpringBootTest(classes = {GrpcServerApplication.class})
 public class UserGrpcServerServiceTest {
 
-	@Autowired
-	private UserGrpcServerService userGrpcServerService;
-	@Autowired
-	private UserMapper userMapper;
-	@MockBean
-	private UserEntityRepository userEntityRepository;
-
 	private final AddUserRequest userRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
 			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry("UK").build();
 	private final AddUserRequest userRequest2 = AddUserRequest.newBuilder().setFirstName("Charlie").setLastName("Bob")
 			.setNickname("Ab1234").setPassword("supersecurepassword").setEmail("charlie@bob.com").setCountry("UK")
 			.build();
 	private final String userId = "d2a7924e-765f-4949-bc4c-219c956d0f8b";
+	@Autowired
+	private UserGrpcServerService userGrpcServerService;
+	@Autowired
+	private UserMapper userMapper;
+	@MockBean
+	private UserEntityRepository userEntityRepository;
 
 	@BeforeEach
 	public void init() {

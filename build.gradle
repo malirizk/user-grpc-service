@@ -1,117 +1,91 @@
 buildscript {
-	repositories {
-		google()
-		mavenCentral()
-	}
-	ext {
-		springBootGrpcVersion = '2.13.1.RELEASE'
+    repositories {
+        google()
+        mavenCentral()
+    }
 
-		// https://github.com/grpc/grpc-java/releases
-		grpcVersion = '1.46.0'
-
-		// https://github.com/google/guava/releases
-		guavaVersion = '31.1-jre'
-		// https://github.com/protocolbuffers/protobuf/releases
-		protobufVersion = '3.21.1'
-		protobufGradlePluginVersion = '0.8.18'
-
-		// https://github.com/spring-projects/spring-boot/releases
-		springBootVersion = '2.6.7'
-		// https://github.com/spring-cloud/spring-cloud-release/releases
-		springCloudVersion = '2021.0.3'
-		// https://github.com/alibaba/spring-cloud-alibaba/releases
-		springCloudAlibabaNacosVersion = '2021.1'
-
-		lombokPluginVersion = '6.5.0.3'
-		//versioningPluginVersion = '2.15.1'
-		//versionsPluginVersion = '0.42.0'
-
-		mapstructVersion = '1.5.2.Final'
-		lombokMapstructBindingVersion = '0.2.0'
-		javaxValidationVersion = '2.0.1.Final'
-		commonsLang3Version = '3.12.0'
-		springdocOpenapiUiVersion = '1.6.9'
-		jjwtVersion = '0.9.1'
-
-		springActiveProfile = 'dev'
-	}
+    ext {
+        grpcVersion = '1.46.0'
+        protobufVersion = '3.21.1'
+        protobufGradlePluginVersion = '0.8.18'
+        springBootVersion = '2.6.7'
+        springBootGrpcVersion = '2.13.1.RELEASE'
+		springDepManagVersion = '1.0.12.RELEASE'
+        mapstructVersion = '1.5.2.Final'
+        lombokMapstructBindingVersion = '0.2.0'
+        javaxValidationVersion = '2.0.1.Final'
+        commonsLang3Version = '3.12.0'
+        springActiveProfile = 'dev'
+    }
 }
 
 plugins {
-	id 'java'
-	id 'java-library'
-	id 'org.springframework.boot' version "${springBootVersion}" apply false
-	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-	//id 'net.nemerosa.versioning' version "${versioningPluginVersion}"
-	id 'com.google.protobuf' version "${protobufGradlePluginVersion}"
-	id 'io.freefair.lombok' version "${lombokPluginVersion}" apply false
-	//id 'com.github.ben-manes.versions' version "${versionsPluginVersion}" // gradle dependencyUpdates
-	id 'jacoco'
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot' version "${springBootVersion}" apply false
+    id 'io.spring.dependency-management' version "${springDepManagVersion}"
+    id 'com.google.protobuf' version "${protobufGradlePluginVersion}"
+    id 'jacoco'
 }
 
 allprojects {
-	apply plugin: 'java'
-	apply plugin: 'idea'
-	apply plugin: 'io.spring.dependency-management'
-	apply plugin: 'io.freefair.lombok'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
 
-	repositories {
-		google()
-		mavenCentral()
-	}
+    repositories {
+        google()
+        mavenCentral()
+    }
 
-	jacoco {
-		toolVersion = '0.8.7'
-	}
+    jacoco {
+        toolVersion = '0.8.7'
+    }
 }
 
 allprojects { project ->
-	buildscript {
-		dependencyManagement {
-			imports {
-				mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
-				//mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-				//mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:${springCloudAlibabaNacosVersion}"
-				mavenBom "com.google.protobuf:protobuf-bom:${protobufVersion}"
-				//mavenBom "com.google.guava:guava-bom:${guavaVersion}"
-				mavenBom "io.grpc:grpc-bom:${grpcVersion}"
-				//mavenBom "org.junit:junit-bom:5.9.0"
-			}
-		}
-	}
+    buildscript {
+        dependencyManagement {
+            imports {
+                mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+                mavenBom "com.google.protobuf:protobuf-bom:${protobufVersion}"
+                mavenBom "io.grpc:grpc-bom:${grpcVersion}"
+            }
+        }
+    }
 
-	group = 'com.user-grpc-service'
-	version = '0.0.1-SNAPSHOT'
+    group = 'com.user-grpc-service'
+    version = '0.0.1-SNAPSHOT'
 
-	test {
-		useJUnitPlatform()
-		testLogging {
-			exceptionFormat = 'full'
-			showCauses = true
-			showExceptions = true
-			showStackTraces = true
-			it.events('passed', 'skipped', 'failed')
-		}
-		finalizedBy(rootProject.jacocoTestReport)
-	}
+    test {
+        useJUnitPlatform()
+        testLogging {
+            exceptionFormat = 'full'
+            showCauses = true
+            showExceptions = true
+            showStackTraces = true
+            it.events('passed', 'skipped', 'failed')
+        }
+        finalizedBy(rootProject.jacocoTestReport)
+    }
 
-	jacocoTestReport {
-		dependsOn test
+    jacocoTestReport {
+        dependsOn test
 
-		afterEvaluate {
-			classDirectories.setFrom(files(classDirectories.files.collect {
-				fileTree(dir: it, exclude: [
-						"com/usergrpcservice/grpc/**/model/**",
-						"com/usergrpcservice/grpc/**/exception/**",
-						"com/usergrpcservice/grpc/**/config/**"
-				])
-			}))
-		}
-	}
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "com/usergrpcservice/grpc/**/model/**",
+                        "com/usergrpcservice/grpc/**/exception/**",
+                        "com/usergrpcservice/grpc/**/config/**"
+                ])
+            }))
+        }
+    }
 }
 
 dependencies {
-	api project(':user-grpc-lib')
-	api project(':user-grpc-server')
-	api project(':user-grpc-client')
+    api project(':user-grpc-lib')
+    api project(':user-grpc-server')
+    api project(':user-grpc-client')
 }

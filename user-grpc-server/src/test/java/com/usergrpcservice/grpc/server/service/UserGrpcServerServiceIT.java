@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.usergrpcservice.grpc.*;
 import com.usergrpcservice.grpc.server.exception.BusinessException;
@@ -25,11 +24,8 @@ import com.usergrpcservice.grpc.server.repository.UserEntityRepository;
 import io.grpc.internal.testing.StreamRecorder;
 
 @ActiveProfiles("test")
-@SpringBootTest(properties = {
-		"grpc.server.inProcessName=test",
-		"grpc.server.port=-1",
-		"grpc.client.inProcess.address=in-process:test"
-})
+@SpringBootTest(properties = {"grpc.server.inProcessName=test", "grpc.server.port=-1",
+		"grpc.client.inProcess.address=in-process:test"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserGrpcServerServiceIT {
 

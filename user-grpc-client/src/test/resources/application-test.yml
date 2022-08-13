@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile:
+        test
+  main:
+    allow-bean-definition-overriding:
+      true
+grpc:
+  client:
+    user-grpc-server:
+      address: in-process:test
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+  server:
+    inProcessName: test
+    port: -1

@@ -1,0 +1,10 @@
+{
+  "id" : "d2a7924e-765f-4949-bc4c-219c956d0f8b",
+  "first_name": "Alice",
+  "last_name": "Bob",
+  "nickname": "Ab123",
+  "email": "alice@bob.com",
+  "country": "UK",
+  "created_at" : "2022-08-15T20:15:00.05Z",
+  "updated_at" : "2022-08-15T20:15:00.05Z"
+}

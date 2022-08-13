@@ -1,3 +1,2 @@
 rootProject.name = 'user-grpc-service'
 include 'user-grpc-lib', 'user-grpc-server', 'user-grpc-client'
-
