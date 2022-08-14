@@ -11,6 +11,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 
 import com.google.protobuf.Empty;
@@ -23,18 +24,23 @@ import com.usergrpcservice.grpc.server.model.UserEntity;
 import com.usergrpcservice.grpc.server.repository.UserEntityRepository;
 
 import io.grpc.stub.StreamObserver;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 @Slf4j
 @GrpcService
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 
+	private static final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	private final UserMapper userMapper;
 	private final UserEntityRepository userEntityRepository;
 	private final Validator validator;
+	@Value("${user.service.search.page.size:10}")
+	private Integer DEFAULT_SEARCH_PAGE_SIZE;
+	@Value("${user.service.search.sort.by:createdAt}")
+	private String DEFAULT_SEARCH_SORT_BY_COLUMNS;
 
 	@Override
 	public void addUser(AddUserRequest request, StreamObserver<UserResponse> responseObserver) {
@@ -56,7 +62,7 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 
 	public void updateUser(UpdateUserRequest request, StreamObserver<UserResponse> responseObserver) {
 		Optional<UserEntity> userEntityOptional;
-		if (StringUtils.isBlank(request.getId())
+		if (StringUtils.isBlank(request.getId()) || !request.getId().matches(UUID_REGEX)
 				|| (userEntityOptional = userEntityRepository.findById(UUID.fromString(request.getId()))).isEmpty()) {
 			throw new BusinessException(ExceptionMap.USER_NOT_FOUND);
 		}
@@ -78,8 +84,8 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 	}
 
 	public void deleteUser(DeleteRequest request, StreamObserver<Empty> responseObserver) {
-		if (StringUtils.isBlank(request.getId())) {
-			throw new IllegalArgumentException("User ID is null or Empty");
+		if (StringUtils.isBlank(request.getId()) || !request.getId().matches(UUID_REGEX)) {
+			throw new IllegalArgumentException("User ID is not valid!");
 		}
 
 		Optional<UserEntity> user = userEntityRepository.findById(UUID.fromString(request.getId()));
@@ -97,8 +103,10 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 		UserEntity userSearchEntity = new UserEntity();
 		fillSearchCriteria(request.getQuery(), userSearchEntity);
 
-		Pageable pageable = PageRequest.of(request.getPageNumber(), Optional.of(request.getResultPerPage()).orElse(10),
-				Sort.by("createdAt"));
+		Pageable pageable = PageRequest.of(
+				request.getPageNumber(), Optional.of(request.getResultPerPage())
+						.map(s -> s == 0 ? DEFAULT_SEARCH_PAGE_SIZE : s).orElse(DEFAULT_SEARCH_PAGE_SIZE),
+				Sort.by(DEFAULT_SEARCH_SORT_BY_COLUMNS));
 		ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll().withIgnoreCase()
 				.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 		Example<UserEntity> example = Example.of(userSearchEntity, exampleMatcher);

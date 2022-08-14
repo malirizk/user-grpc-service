@@ -144,7 +144,7 @@ public class UserGrpcServerServiceIT {
 		userEntity3.setNickname("ABC12345");
 		userEntityRepository.save(userEntity3);
 
-		SearchRequest searchRequest = SearchRequest.newBuilder().setQuery("country=UK").setResultPerPage(3).build();
+		SearchRequest searchRequest = SearchRequest.newBuilder().setQuery("country=UK").build();
 		StreamRecorder<SearchResponse> responseObserver = StreamRecorder.create();
 
 		userGrpcServerService.listUsers(searchRequest, responseObserver);
@@ -188,10 +188,9 @@ public class UserGrpcServerServiceIT {
 		userEntity3.setNickname("ABC12345");
 		userEntityRepository.save(userEntity3);
 
-		SearchRequest searchRequest = SearchRequest.newBuilder().setResultPerPage(3).build();
 		StreamRecorder<SearchResponse> responseObserver = StreamRecorder.create();
 
-		userGrpcServerService.listUsers(searchRequest, responseObserver);
+		userGrpcServerService.listUsers(SearchRequest.getDefaultInstance(), responseObserver);
 		assertNull(responseObserver.getError());
 		SearchResponse response = responseObserver.getValues().get(0);
 		assertNotNull(response);
@@ -232,7 +231,7 @@ public class UserGrpcServerServiceIT {
 		userEntityRepository.save(userEntity3);
 
 		SearchRequest searchRequest = SearchRequest.newBuilder()
-				.setQuery("first_name=charliezz&last_name=bob&country=uk").setResultPerPage(10).build();
+				.setQuery("first_name=charliezz&last_name=bob&country=uk").build();
 		StreamRecorder<SearchResponse> responseObserver = StreamRecorder.create();
 
 		userGrpcServerService.listUsers(searchRequest, responseObserver);

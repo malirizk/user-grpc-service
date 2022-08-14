@@ -26,3 +26,13 @@ spring:
 grpc:
   server:
     port: 9898
+
+user:
+  service:
+    search:
+      page:
+        size:
+          10
+      sort:
+        by:
+          createdAt

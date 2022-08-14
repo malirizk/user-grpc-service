@@ -40,7 +40,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @EnableAutoConfiguration
-@SpringBootTest(classes = UserGrpcClientController.class)
+@SpringBootTest(classes = {UserGrpcClientController.class, UserGrpcClientControllerAdvice.class})
 @SpringJUnitConfig(classes = UserGrpcClientServiceITConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserGrpcClientControllerIT {
@@ -123,6 +123,13 @@ public class UserGrpcClientControllerIT {
 		mockMvc.perform(put(V1_API_USERS + userResponseDto.getId()).contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON).content(updateUserRequestJson)).andDo(print())
 				.andExpect(status().isOk()).andExpect(content().json(objectMapper.writeValueAsString(userResponseDto)));
+	}
+
+	@Test
+	void Should_Fail_When_Update_User_Not_Exist() throws Exception {
+		mockMvc.perform(put(V1_API_USERS + "12345").contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON).content("{ \"first_name\" : \"Charlie\" }")).andDo(print())
+				.andExpect(status().isInternalServerError());
 	}
 
 	@Test

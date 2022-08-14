@@ -8,10 +8,17 @@ option java_package = "com.usergrpcservice.grpc";
 option java_outer_classname = "UserServiceProto";
 
 service UserService {
-  rpc addUser(AddUserRequest) returns (UserResponse) {};
-  rpc updateUser(UpdateUserRequest) returns (UserResponse) {};
-  rpc deleteUser(DeleteRequest) returns (google.protobuf.Empty) {};
-  rpc listUsers(SearchRequest) returns (SearchResponse) {};
+  // client-to-server RPC to create new user
+  rpc addUser(AddUserRequest) returns (UserResponse) {}
+
+  // client-to-server RPC to update already exist user
+  rpc updateUser(UpdateUserRequest) returns (UserResponse) {}
+
+  // client-to-server RPC to delete already exist user
+  rpc deleteUser(DeleteRequest) returns (google.protobuf.Empty) {}
+
+  // client-to-server RPC to search users
+  rpc listUsers(SearchRequest) returns (SearchResponse) {}
 }
 
 message AddUserRequest {
@@ -49,9 +56,9 @@ message DeleteRequest {
 }
 
 message SearchRequest {
-  string query = 1;
-  int32 page_number = 2;
-  int32 result_per_page = 3;
+  optional string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3;
 }
 
 message SearchResponse {

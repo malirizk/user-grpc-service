@@ -18,3 +18,12 @@ spring:
     username: sa
     password:
     platform: h2
+user:
+  service:
+    search:
+      page:
+        size:
+          3
+      sort:
+        by:
+          createdAt
