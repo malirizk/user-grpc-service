@@ -1,14 +1,12 @@
 package com.usergrpcservice.grpc.client.config;
 
 import org.mapstruct.factory.Mappers;
-import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-import com.usergrpcservice.grpc.UserServiceGrpc;
 import com.usergrpcservice.grpc.client.mapper.UserClientMapper;
 import com.usergrpcservice.grpc.client.service.UserGrpcClientService;
 
@@ -29,8 +27,7 @@ public class UserGrpcClientServiceITConfig {
 	@Bean
 	@Primary
 	UserGrpcClientService userGrpcClientService() {
-		return new UserGrpcClientService(Mockito.mock(UserServiceGrpc.UserServiceBlockingStub.class),
-				Mappers.getMapper(UserClientMapper.class));
+		return new UserGrpcClientService();
 	}
 
 	@Bean

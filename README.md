@@ -27,7 +27,7 @@ This is example project how to use grpc with spring-boot
 `grpcurl -plaintext -d '{"first_name": "Mohamed", "last_name": "Abdelrazek", "nickname": "Mido", "password": "p@ssword", "email": "mohamed.abdelrazek@gmail.com", "country": "PL"}' \
     localhost:9898 com.usergrpcservice.service.UserService/addUser`
 
-`grpcurl -plaintext -d @ localhost:9898 com.usergrpcservice.service.UserService/addUser <<EOM
+`grpcurl -plaintext -d @ localhost:9898 service.UserService/addUser <<EOM
 {
     "first_name": "Mohamed",
     "last_name": "Abdelrazek",
@@ -37,3 +37,23 @@ This is example project how to use grpc with spring-boot
     "country": "PL"
 }
 EOM`
+
+`grpcurl -plaintext -d @ localhost:9898 service.UserService/listUsers`
+
+`curl -X GET http://localhost:8080/v1/api/users/search`
+
+`curl -X 'POST' \
+        'http://localhost:8080/v1/api/users' \
+        -H 'Content-Type: application/json' \
+        -d '{
+                "first_name": "Mohamed",
+                "last_name": "Abdelrazek",
+                "nickname": "Moo",
+                "password": "p@ssword",
+                "email": "mohamed.abdelrazek@gmail.com",
+                "country": "PL"
+            }'`
+
+`grpcurl --plaintext localhost:9898 grpc.health.v1.Health/Check`
+
+`grpcurl --plaintext -d '{"service": "service.UserService"}' localhost:9898 grpc.health.v1.Health/Check`

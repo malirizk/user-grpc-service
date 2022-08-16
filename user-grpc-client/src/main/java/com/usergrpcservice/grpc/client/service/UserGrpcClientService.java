@@ -1,5 +1,6 @@
 package com.usergrpcservice.grpc.client.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.usergrpcservice.grpc.*;
@@ -8,17 +9,16 @@ import com.usergrpcservice.grpc.client.dto.UserResponseDto;
 import com.usergrpcservice.grpc.client.dto.UserSearchResponseDto;
 import com.usergrpcservice.grpc.client.mapper.UserClientMapper;
 
-import lombok.AllArgsConstructor;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 
 @Service
-@AllArgsConstructor
 public class UserGrpcClientService {
 
 	@GrpcClient("user-grpc-server")
-	private final UserServiceGrpc.UserServiceBlockingStub userServiceStub;
+	private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
-	private final UserClientMapper userClientMapper;
+	@Autowired
+	private UserClientMapper userClientMapper;
 
 	public UserResponseDto addUser(UserRequestDto userRequestDto) {
 		UserResponse userResponse = userServiceStub.addUser(userClientMapper.toAddUserRequest(userRequestDto));

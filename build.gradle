@@ -59,11 +59,13 @@ allprojects { project ->
 
     test {
         useJUnitPlatform()
+        systemProperty "file.encoding", "utf-8"
         testLogging {
             exceptionFormat = 'full'
             showCauses = true
             showExceptions = true
             showStackTraces = true
+            showStandardStreams = false
             it.events('passed', 'skipped', 'failed')
         }
         finalizedBy(rootProject.jacocoTestReport)

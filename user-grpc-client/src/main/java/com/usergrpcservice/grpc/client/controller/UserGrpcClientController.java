@@ -41,7 +41,7 @@ public class UserGrpcClientController {
 		userGrpcClientService.deleteUser(id);
 	}
 
-	@GetMapping("/search")
+	@GetMapping
 	@ResponseBody
 	public UserSearchResponseDto findUsers(@RequestParam(required = false) Map<String, String> queryParams) {
 		int pageNo = Integer.parseInt(queryParams.getOrDefault("page", "0"));

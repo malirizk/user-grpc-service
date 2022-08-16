@@ -1,11 +1,13 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-package com.usergrpcservice.service;
-
 option java_multiple_files = true;
 option java_package = "com.usergrpcservice.grpc";
 option java_outer_classname = "UserServiceProto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+package service;
 
 service UserService {
   // client-to-server RPC to create new user
@@ -27,7 +29,7 @@ message AddUserRequest {
   string nickname = 3;
   string password = 4;
   string email = 5;
-  string country = 6;
+  Country country = 6;
 }
 
 message UserResponse {
@@ -36,9 +38,9 @@ message UserResponse {
   string last_name = 3;
   string nickname = 4;
   string email = 5;
-  string country = 6;
-  string created_at = 7;
-  string updated_at = 8;
+  Country country = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
 }
 
 message UpdateUserRequest {
@@ -48,7 +50,7 @@ message UpdateUserRequest {
   optional string nickname = 4;
   optional string password = 5;
   optional string email = 6;
-  optional string country = 7;
+  Country country = 7;
 }
 
 message DeleteRequest {
@@ -68,7 +70,7 @@ message SearchResponse {
   repeated UserResponse content = 4;
 }
 
-enum EnumCountry {
+enum Country {
   UK = 0;
   PL = 1;
 }
