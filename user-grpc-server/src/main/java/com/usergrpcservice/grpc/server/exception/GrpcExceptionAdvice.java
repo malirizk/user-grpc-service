@@ -26,7 +26,7 @@ public class GrpcExceptionAdvice {
 
 	@GrpcExceptionHandler(Exception.class)
 	public StatusRuntimeException handleGeneralException(Exception e) {
-		return Status.INVALID_ARGUMENT.withDescription(e.getMessage()).withCause(e).asRuntimeException();
+		return Status.INTERNAL.withDescription(e.getMessage()).withCause(e).asRuntimeException();
 	}
 
 	@GrpcExceptionHandler(TransactionSystemException.class)

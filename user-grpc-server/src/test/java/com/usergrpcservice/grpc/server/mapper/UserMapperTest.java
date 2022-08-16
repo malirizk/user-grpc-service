@@ -3,7 +3,6 @@ package com.usergrpcservice.grpc.server.mapper;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.usergrpcservice.grpc.AddUserRequest;
+import com.usergrpcservice.grpc.Country;
 import com.usergrpcservice.grpc.UpdateUserRequest;
 import com.usergrpcservice.grpc.UserResponse;
 import com.usergrpcservice.grpc.server.model.UserEntity;
@@ -23,8 +23,8 @@ public class UserMapperTest {
 	@Test
 	void Should_Return_UserEntity_From_AddUserRequest() {
 		AddUserRequest addUserRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
-				.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry("UK")
-				.build();
+				.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com")
+				.setCountry(Country.UK).build();
 
 		UserEntity userEntity = userMapper.toUserEntity(addUserRequest);
 
@@ -33,7 +33,7 @@ public class UserMapperTest {
 		assertEquals(addUserRequest.getNickname(), userEntity.getNickname());
 		assertEquals(addUserRequest.getPassword(), userEntity.getPassword());
 		assertEquals(addUserRequest.getEmail(), userEntity.getEmail());
-		assertEquals(addUserRequest.getCountry(), userEntity.getCountry());
+		assertEquals(addUserRequest.getCountry().name(), userEntity.getCountry());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class UserMapperTest {
 		userEntity.setNickname("Ab123");
 		userEntity.setPassword("supersecurepassword");
 		userEntity.setEmail("alice@bob.com");
-		userEntity.setCountry("UK");
+		userEntity.setCountry(Country.UK.name());
 		userEntity.setCreatedAt(LocalDateTime.now());
 		userEntity.setUpdatedAt(LocalDateTime.now());
 
@@ -56,11 +56,9 @@ public class UserMapperTest {
 		assertEquals(userEntity.getLastName(), userResponse.getLastName());
 		assertEquals(userEntity.getNickname(), userResponse.getNickname());
 		assertEquals(userEntity.getEmail(), userResponse.getEmail());
-		assertEquals(userEntity.getCountry(), userResponse.getCountry());
-		assertEquals(userEntity.getCreatedAt().format(DateTimeFormatter.ofPattern(UserMapper.FORMAT)),
-				userResponse.getCreatedAt());
-		assertEquals(userEntity.getUpdatedAt().format(DateTimeFormatter.ofPattern(UserMapper.FORMAT)),
-				userResponse.getUpdatedAt());
+		assertEquals(userEntity.getCountry(), userResponse.getCountry().name());
+		assertEquals(userEntity.getCreatedAt().getNano(), userResponse.getCreatedAt().getNanos());
+		assertEquals(userEntity.getUpdatedAt().getNano(), userResponse.getUpdatedAt().getNanos());
 	}
 
 	@Test
@@ -72,7 +70,7 @@ public class UserMapperTest {
 		userEntity.setNickname("Ab123");
 		userEntity.setPassword("supersecurepassword");
 		userEntity.setEmail("alice@bob.com");
-		userEntity.setCountry("UK");
+		userEntity.setCountry(Country.UK.name());
 		LocalDateTime localDateTime = LocalDateTime.now();
 		userEntity.setCreatedAt(localDateTime);
 		userEntity.setUpdatedAt(localDateTime);
@@ -89,7 +87,7 @@ public class UserMapperTest {
 		assertEquals("Ab123", userEntity.getNickname());
 		assertEquals("supersecurepassword", userEntity.getPassword());
 		assertEquals("alice@bob.com", userEntity.getEmail());
-		assertEquals("UK", userEntity.getCountry());
+		assertEquals(Country.UK.name(), userEntity.getCountry());
 		assertEquals(localDateTime, userEntity.getCreatedAt());
 		assertEquals(localDateTime, userEntity.getUpdatedAt());
 	}
@@ -103,7 +101,7 @@ public class UserMapperTest {
 		userEntity.setNickname("Ab123");
 		userEntity.setPassword("supersecurepassword");
 		userEntity.setEmail("alice@bob.com");
-		userEntity.setCountry("UK");
+		userEntity.setCountry(Country.UK.name());
 		userEntity.setCreatedAt(LocalDateTime.now());
 		userEntity.setUpdatedAt(LocalDateTime.now());
 
@@ -115,6 +113,6 @@ public class UserMapperTest {
 		assertEquals(userEntity.getNickname(), updateUserRequest.getNickname());
 		assertEquals(userEntity.getEmail(), updateUserRequest.getEmail());
 		assertEquals(userEntity.getPassword(), updateUserRequest.getPassword());
-		assertEquals(userEntity.getCountry(), updateUserRequest.getCountry());
+		assertEquals(userEntity.getCountry(), updateUserRequest.getCountry().name());
 	}
 }

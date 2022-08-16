@@ -2,7 +2,6 @@ package com.usergrpcservice.grpc.server.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -24,11 +23,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.usergrpcservice.grpc.AddUserRequest;
-import com.usergrpcservice.grpc.DeleteRequest;
-import com.usergrpcservice.grpc.UpdateUserRequest;
-import com.usergrpcservice.grpc.UserResponse;
-import com.usergrpcservice.grpc.server.GrpcServerApplication;
+import com.usergrpcservice.grpc.*;
+import com.usergrpcservice.grpc.server.UserGrpcServerApplication;
+import com.usergrpcservice.grpc.server.config.GlobalInterceptorConfiguration;
 import com.usergrpcservice.grpc.server.exception.BusinessException;
 import com.usergrpcservice.grpc.server.exception.ExceptionMap;
 import com.usergrpcservice.grpc.server.mapper.UserMapper;
@@ -39,15 +36,16 @@ import io.grpc.internal.testing.StreamRecorder;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {GrpcServerApplication.class})
+@SpringBootTest(classes = {UserGrpcServerApplication.class, GlobalInterceptorConfiguration.class})
 public class UserGrpcServerServiceTest {
 
-	private final AddUserRequest userRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
-			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry("UK").build();
-	private final AddUserRequest userRequest2 = AddUserRequest.newBuilder().setFirstName("Charlie").setLastName("Bob")
-			.setNickname("Ab1234").setPassword("supersecurepassword").setEmail("charlie@bob.com").setCountry("UK")
-			.build();
 	private final String userId = "d2a7924e-765f-4949-bc4c-219c956d0f8b";
+	private final AddUserRequest userRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
+			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry(Country.UK)
+			.build();
+	private final AddUserRequest userRequest2 = AddUserRequest.newBuilder().setFirstName("Charlie").setLastName("Bob")
+			.setNickname("Ab1234").setPassword("supersecurepassword").setEmail("charlie@bob.com").setCountry(Country.UK)
+			.build();
 	@Autowired
 	private UserGrpcServerService userGrpcServerService;
 	@Autowired
@@ -154,7 +152,9 @@ public class UserGrpcServerServiceTest {
 
 	@Test
 	void Should_Success_Exception_When_Delete_User() {
-		when(userEntityRepository.findById(UUID.fromString(userId))).thenReturn(Optional.of(mock(UserEntity.class)));
+		UserEntity userEntity = userMapper.toUserEntity(userRequest);
+		userEntity.setId(UUID.fromString(userId));
+		when(userEntityRepository.findById(userEntity.getId())).thenReturn(Optional.of(userEntity));
 
 		assertDoesNotThrow(() -> userGrpcServerService.deleteUser(DeleteRequest.newBuilder().setId(userId).build(),
 				StreamRecorder.create()));

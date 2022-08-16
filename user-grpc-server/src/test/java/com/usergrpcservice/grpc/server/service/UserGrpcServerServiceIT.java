@@ -31,10 +31,10 @@ public class UserGrpcServerServiceIT {
 
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SS'Z'");
 	private final AddUserRequest addUserRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
-			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry("UK").build();
+			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry(Country.UK).build();
 	private final AddUserRequest addUserRequest2 = AddUserRequest.newBuilder().setFirstName("Charlie")
 			.setLastName("Bob").setNickname("Ab1234").setPassword("supersecurepassword").setEmail("charlie@bob.com")
-			.setCountry("UK").build();
+			.setCountry(Country.UK).build();
 	private final String userId = "d2a7924e-765f-4949-bc4c-219c956d0f8b";
 
 	@Autowired
@@ -82,7 +82,7 @@ public class UserGrpcServerServiceIT {
 		userEntityRepository.save(userEntity);
 
 		UpdateUserRequest updateUserRequest = UpdateUserRequest.newBuilder().setId(userEntity.getId().toString())
-				.setLastName("Bobbb").setCountry("PL").buildPartial();
+				.setLastName("Bobbb").setCountry(Country.PL).buildPartial();
 		StreamRecorder<UserResponse> responseObserver = StreamRecorder.create();
 		userGrpcServerService.updateUser(updateUserRequest, responseObserver);
 
@@ -96,8 +96,8 @@ public class UserGrpcServerServiceIT {
 		assertEquals(userEntity.getNickname(), response.getNickname());
 		assertEquals(userEntity.getEmail(), response.getEmail());
 		assertEquals(updateUserRequest.getCountry(), response.getCountry());
-		assertEquals(userEntity.getCreatedAt().format(formatter), response.getCreatedAt());
-		assertEquals(userEntity.getUpdatedAt().format(formatter), response.getUpdatedAt());
+		assertEquals(userEntity.getCreatedAt().getNano(), response.getCreatedAt().getNanos());
+		assertEquals(userEntity.getUpdatedAt().getNano(), response.getUpdatedAt().getNanos());
 	}
 
 	@Test
