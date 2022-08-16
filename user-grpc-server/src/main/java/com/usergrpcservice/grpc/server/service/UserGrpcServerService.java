@@ -21,6 +21,8 @@ import com.usergrpcservice.grpc.server.exception.ExceptionMap;
 import com.usergrpcservice.grpc.server.mapper.UserMapper;
 import com.usergrpcservice.grpc.server.model.SearchKeyEnum;
 import com.usergrpcservice.grpc.server.model.UserEntity;
+import com.usergrpcservice.grpc.server.model.event.UpdatedUserEntityEvent;
+import com.usergrpcservice.grpc.server.model.event.UpdatedUserEntityEventEnum;
 import com.usergrpcservice.grpc.server.repository.UserEntityRepository;
 
 import io.grpc.stub.StreamObserver;
@@ -37,6 +39,7 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 	private final UserMapper userMapper;
 	private final UserEntityRepository userEntityRepository;
 	private final Validator validator;
+	private final UserProducerEventService userProducerEventService;
 	@Value("${user.service.search.page.size:10}")
 	private Integer DEFAULT_SEARCH_PAGE_SIZE;
 	@Value("${user.service.search.sort.by:createdAt}")
@@ -54,6 +57,11 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 		});
 
 		userEntityRepository.save(user);
+
+		String message = String.format(UpdatedUserEntityEventEnum.CREATED.getMessageTemplate(), user.getId());
+		UpdatedUserEntityEvent userEntityEvent = UpdatedUserEntityEvent.builder()
+				.eventName(UpdatedUserEntityEventEnum.CREATED.name()).message(message).userEntity(user).build();
+		userProducerEventService.send(userEntityEvent);
 
 		UserResponse addUserResponse = userMapper.toUserResponse(user);
 		responseObserver.onNext(addUserResponse);
@@ -77,7 +85,14 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 		}
 
 		userMapper.updateUserEntityFromUpdateUserRequest(request, user);
+		log.info("Before update user ID {} in DB", user.getId());
 		userEntityRepository.save(user);
+
+		String message = String.format(UpdatedUserEntityEventEnum.UPDATED.getMessageTemplate(), user.getId());
+		UpdatedUserEntityEvent userEntityEvent = UpdatedUserEntityEvent.builder()
+				.eventName(UpdatedUserEntityEventEnum.UPDATED.name()).message(message).userEntity(user).build();
+		userProducerEventService.send(userEntityEvent);
+
 		UserResponse addUserResponse = userMapper.toUserResponse(user);
 		responseObserver.onNext(addUserResponse);
 		responseObserver.onCompleted();
@@ -90,6 +105,12 @@ public class UserGrpcServerService extends UserServiceGrpc.UserServiceImplBase {
 
 		Optional<UserEntity> user = userEntityRepository.findById(UUID.fromString(request.getId()));
 		if (user.isPresent()) {
+			String message = String.format(UpdatedUserEntityEventEnum.UPDATED.getMessageTemplate(), user.get().getId());
+			UpdatedUserEntityEvent userEntityEvent = UpdatedUserEntityEvent.builder()
+					.eventName(UpdatedUserEntityEventEnum.UPDATED.name()).message(message).userEntity(user.get())
+					.build();
+			userProducerEventService.send(userEntityEvent);
+
 			userEntityRepository.delete(user.get());
 		} else {
 			throw new BusinessException(ExceptionMap.USER_NOT_FOUND);

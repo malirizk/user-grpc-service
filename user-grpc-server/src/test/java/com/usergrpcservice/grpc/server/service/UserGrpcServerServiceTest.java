@@ -10,22 +10,23 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mapstruct.factory.Mappers;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.usergrpcservice.grpc.*;
-import com.usergrpcservice.grpc.server.UserGrpcServerApplication;
-import com.usergrpcservice.grpc.server.config.GlobalInterceptorConfiguration;
 import com.usergrpcservice.grpc.server.exception.BusinessException;
 import com.usergrpcservice.grpc.server.exception.ExceptionMap;
 import com.usergrpcservice.grpc.server.mapper.UserMapper;
@@ -35,9 +36,9 @@ import com.usergrpcservice.grpc.server.repository.UserEntityRepository;
 import io.grpc.internal.testing.StreamRecorder;
 
 @ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {UserGrpcServerApplication.class, GlobalInterceptorConfiguration.class})
-public class UserGrpcServerServiceTest {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class UserGrpcServerServiceTest {
 
 	private final String userId = "d2a7924e-765f-4949-bc4c-219c956d0f8b";
 	private final AddUserRequest userRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
@@ -46,23 +47,28 @@ public class UserGrpcServerServiceTest {
 	private final AddUserRequest userRequest2 = AddUserRequest.newBuilder().setFirstName("Charlie").setLastName("Bob")
 			.setNickname("Ab1234").setPassword("supersecurepassword").setEmail("charlie@bob.com").setCountry(Country.UK)
 			.build();
-	@Autowired
+
 	private UserGrpcServerService userGrpcServerService;
-	@Autowired
-	private UserMapper userMapper;
-	@MockBean
+	private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+	@Mock
 	private UserEntityRepository userEntityRepository;
+	private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+	@Mock
+	private UserProducerEventService userProducerEventService;
 
 	@BeforeEach
 	public void init() {
 		MockitoAnnotations.openMocks(this);
+		userGrpcServerService = new UserGrpcServerService(userMapper, userEntityRepository, validator,
+				userProducerEventService);
 	}
 
 	@Test
 	void Should_Success_When_Add_User() throws Exception {
 		UserEntity userEntity = userMapper.toUserEntity(userRequest);
 		when(userEntityRepository.findByNickname(userEntity.getNickname())).thenReturn(Optional.empty());
-		when(userEntityRepository.save(userEntity)).thenReturn(userEntity);
+		userEntity.setId(UUID.randomUUID());
+		when(userEntityRepository.save(any())).thenReturn(userEntity);
 
 		StreamRecorder<UserResponse> responseObserver = StreamRecorder.create();
 		userGrpcServerService.addUser(userRequest, responseObserver);

@@ -8,6 +8,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation "net.devh:grpc-server-spring-boot-starter:${springBootGrpcVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'com.google.protobuf:protobuf-java-util'
     implementation 'com.google.guava:listenablefuture'
 
@@ -28,6 +30,8 @@ dependencies {
     testImplementation ("org.springframework.boot:spring-boot-starter-test") {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 bootRun {

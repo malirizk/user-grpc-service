@@ -19,17 +19,14 @@ import net.devh.boot.grpc.server.service.GrpcService;
 
 @ActiveProfiles("test")
 @GrpcService
-public class UserGrpcServerForUserGrpcClientServiceIT extends UserServiceGrpc.UserServiceImplBase {
+class UserGrpcServerForUserGrpcClientServiceIT extends UserServiceGrpc.UserServiceImplBase {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
-
+	private final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	@Autowired
 	private UserClientMapper userClientMapper;
-
 	@Value("classpath:/data/addUserResponse.json")
 	private Resource addUserResponse;
-
-	private final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 
 	@Override
 	public void addUser(AddUserRequest request, StreamObserver<UserResponse> responseObserver) {

@@ -43,7 +43,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 @SpringBootTest(classes = {UserGrpcClientController.class, UserGrpcClientControllerAdvice.class})
 @SpringJUnitConfig(classes = UserGrpcClientServiceITConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class UserGrpcClientControllerIT {
+class UserGrpcClientControllerIT {
 
 	private final String V1_API_USERS = "/v1/api/users/";
 

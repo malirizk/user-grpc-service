@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -27,11 +28,13 @@ import io.grpc.internal.testing.StreamRecorder;
 @SpringBootTest(properties = {"grpc.server.inProcessName=test", "grpc.server.port=-1",
 		"grpc.client.inProcess.address=in-process:test"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class UserGrpcServerServiceIT {
+@EmbeddedKafka(ports = 9095)
+class UserGrpcServerServiceIT {
 
 	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SS'Z'");
 	private final AddUserRequest addUserRequest = AddUserRequest.newBuilder().setFirstName("Alice").setLastName("Bob")
-			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry(Country.UK).build();
+			.setNickname("Ab123").setPassword("supersecurepassword").setEmail("alice@bob.com").setCountry(Country.UK)
+			.build();
 	private final AddUserRequest addUserRequest2 = AddUserRequest.newBuilder().setFirstName("Charlie")
 			.setLastName("Bob").setNickname("Ab1234").setPassword("supersecurepassword").setEmail("charlie@bob.com")
 			.setCountry(Country.UK).build();
