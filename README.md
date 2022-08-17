@@ -43,25 +43,25 @@ Please install the following before run the application
 
 #### [gRPCurl](https://github.com/fullstorydev/grpcurl)
 Command line tool to interact with gRPC servers
-`brew install grpcurl`
+```brew install grpcurl```
 
 
 #### [Apache Kafka](https://kafka.apache.org/)
 Event streaming server which is used to handle user entity update events
-`brew install kafka`
+```brew install kafka```
 
 
 
 ### Run
 
-* Start zookeeper server : 
-`/usr/local/bin/zookeeper-server-start /usr/local/etc/zookeeper/zoo.cfg`
+* Start zookeeper server :
+    ```/usr/local/bin/zookeeper-server-start /usr/local/etc/zookeeper/zoo.cfg```
 
 * Start Kafka instance :
-`/usr/local/bin/kafka-server-start /usr/local/etc/kafka/server.properties`
+    ```/usr/local/bin/kafka-server-start /usr/local/etc/kafka/server.properties```
 
 * Start user-grpc-server :
-`./gradlew :user-grpc-server:bootRun`
+    ```./gradlew :user-grpc-server:bootRun```
 
 * Start user-grpc-client :
 `./gradlew :user-grpc-client:bootRun`
@@ -69,9 +69,11 @@ Event streaming server which is used to handle user entity update events
 
 ### user-grpc-service APIs
 
+
 #### Add User
 * gRPC :
-  `grpcurl -plaintext -d @ localhost:9898 service.UserService/addUser <<EOM
+    ```
+  grpcurl -plaintext -d @ localhost:9898 service.UserService/addUser <<EOM
   {
       "first_name": "Alice",
       "last_name": "Bob",
@@ -80,9 +82,12 @@ Event streaming server which is used to handle user entity update events
       "email": "alice@bob.com",
       "country": "UK"
   }
-EOM`
+EOM
+    ```
+
 * REST :
-  `curl -X 'POST' \
+    ```
+  curl -X 'POST' \
            'http://localhost:9090/v1/api/users' \
            -H 'Content-Type: application/json' \
            -d '{
@@ -92,46 +97,61 @@ EOM`
                   "password": "supersecurepassword",
                   "email": "alice@bob.com",
                   "country": "UK"
-           }'`
+           }'
+    ```
 
 
 #### Update User
 * gRPC :
-  `grpcurl -plaintext -d '{ "id":"96ff7869-3c29-4c48-8e44-eb367415c485", "first_name": "Charlie", "country": "PL" }' localhost:9898 service.UserService/updateUser`
+    ```
+    grpcurl -plaintext -d '{ "id":"96ff7869-3c29-4c48-8e44-eb367415c485", "first_name": "Charlie", "country": "PL" }' localhost:9898 service.UserService/updateUser`
+    ```
+
 
 * REST :
-  `curl -X 'PUT' \
-  'http://localhost:9090/v1/api/users/96ff7869-3c29-4c48-8e44-eb367415c485' \
-  -H 'Content-Type: application/json' \
-  -d '{
-          "first_name": "Charlie",
-          "country": "PL"
-      }'`
+  
+  ```
+  curl -X 'PUT' \
+       'http://localhost:9090/v1/api/users/96ff7869-3c29-4c48-8e44-eb367415c485' \
+       -H 'Content-Type: application/json' \
+       -d '{
+               "first_name": "Charlie",
+               "country": "PL"
+           }'
+  ```
+
 
 #### Delete User
 * gRPC :
-  `grpcurl -plaintext -d '{ "id":"96ff7869-3c29-4c48-8e44-eb367415c485" }' localhost:9898 service.UserService/deleteUser`
+    ```
+    grpcurl -plaintext -d '{ "id":"96ff7869-3c29-4c48-8e44-eb367415c485" }' localhost:9898 service.UserService/deleteUser
+    ```
 
 * REST :
-  `curl -X 'DELETE' \
-  'http://localhost:9090/v1/api/users/96ff7869-3c29-4c48-8e44-eb367415c485'`
-
+    ```
+  curl -X 'DELETE' \
+  'http://localhost:9090/v1/api/users/96ff7869-3c29-4c48-8e44-eb367415c485'
+    ```
 
 
 #### Search Users
 * gRPC :
-  `grpcurl -plaintext -d '{ "query":"country=UK" }' localhost:9898 service.UserService/listUsers`
+    ```
+    grpcurl -plaintext -d '{ "query":"country=UK" }' localhost:9898 service.UserService/listUsers
+    ```
 
 * REST :
-  `curl -X GET "http://localhost:9090/v1/api/users?country=UK"`
+    ```
+    curl -X GET "http://localhost:9090/v1/api/users?country=UK"
+    ```
 
 
 
 ### Useful commands
 * List gRPC services
-  `grpcurl -plaintext localhost:9898 list`
+    ```grpcurl -plaintext localhost:9898 list```
 * Check service health check
-  `grpcurl --plaintext localhost:9898 grpc.health.v1.Health/Check`
+    ```grpcurl --plaintext localhost:9898 grpc.health.v1.Health/Check```
 
 
 ### Notes
