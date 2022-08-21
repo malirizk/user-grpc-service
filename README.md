@@ -52,7 +52,7 @@ Event streaming server which is used to handle user entity update events
 
 
 
-### Run
+### Local Run
 
 * Start zookeeper server :
     ```/usr/local/bin/zookeeper-server-start /usr/local/etc/zookeeper/zoo.cfg```
@@ -66,6 +66,19 @@ Event streaming server which is used to handle user entity update events
 * Start user-grpc-client :
 `./gradlew :user-grpc-client:bootRun`
 
+
+### Cloud Run
+
+* Start Kafka server:
+    ```$ cd user-grpc-server```
+    ```$ docker-compose up -d```
+* Test Kafka:
+  * ```% nc -z localhost 2181```
+  * ```% nc -z localhost 9092```
+  * ```% kubectl get nodes```
+  * ```% kubectl get svc```
+  * ```% kubectl get pods --namespace kube-system```
+* 
 
 ### user-grpc-service APIs
 
